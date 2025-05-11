@@ -1,0 +1,14 @@
+[
+  { "Seconds": "1", "Height": "5 ft", "Speed": "0.5 m/s" },
+  { "Seconds": "2", "Height": "5 ft", "Speed": "0.6 m/s" },
+  { "Seconds": "3", "Height": "6 ft", "Speed": "0.7 m/s" },
+  { "Seconds": "4", "Height": "6 ft", "Speed": "0.8 m/s" },
+  { "Seconds": "5", "Height": "6 ft", "Speed": "0.9 m/s" },
+  { "Seconds": "6", "Height": "7 ft", "Speed": "1.0 m/s" },
+  { "Seconds": "7", "Height": "7 ft", "Speed": "1.1 m/s" },
+  { "Seconds": "8", "Height": "8 ft", "Speed": "1.2 m/s" },
+  { "Seconds": "9", "Height": "9 ft", "Speed": "1.3 m/s" },
+  { "Seconds": "10", "Height": "9 ft", "Speed": "1.4 m/s" },
+  { "Seconds": "11", "Height": "10 ft", "Speed": "1.5 m/s" },
+  { "Seconds": "12", "Height": "10 ft", "Speed": "1.6 m/s" }
+]
