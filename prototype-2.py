@@ -1,4 +1,5 @@
 import sys
+import threading
 from PySide6.QtGui import QAction, QFont, QFontDatabase, QKeyEvent
 from PySide6.QtCore import QCoreApplication, QFile, Qt
 from PySide6.QtWidgets import (
@@ -38,6 +39,8 @@ class MyApp(QMainWindow):
 
         self.style = STYLE()
         self.style.setStylesheet(QApplication.instance())
+        self.t =  threading.Thread(target=self.update)
+        self.t.start()
 
         self.controlPanelTab() # Control Panel
 
@@ -56,6 +59,14 @@ class MyApp(QMainWindow):
                 # Inactive button style
                 btn.setStyleSheet("background-color: #424242;")  # gray
 
+
+    def update(self):
+        while True:
+            self.t1_label = self.ui.findChild(QLabel, "thruster1")
+            self.t1_label.setText("Thruster1: " + str(mqtt.thruster1[0]))
+
+            self.t2_label = self.ui.findChild(QLabel, "thruster2")
+            self.t2_label.setText("Thruster2: " + str(mqtt.thruster1[1]))
 
     def controlPanelTab(self):
         
@@ -83,8 +94,6 @@ class MyApp(QMainWindow):
         self.cam_2_toggle_btn = self.ui.findChild(QPushButton, "secondaryCamera_1_ToggleButton")
         self.cam_3_toggle_btn = self.ui.findChild(QPushButton, "secondaryCamera_2_ToggleButton")
 
-        self.t1_label = self.ui.findChild(QLabel, "thruster1")
-        self.t1_label.setText("skibdi toilet")
         # Initialize camera handlers
         self.cameras = CAMERAS(
             labels=[

@@ -1,16 +1,18 @@
 import paho.mqtt.client as mqtt
 import paho.mqtt.publish as publish
 
-from inputs import get_gamepad
+from inputs import get_gamepad, devices
 import math
 import threading
+
+thruster1 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 
 class XboxController(object):
     MAX_TRIG_VAL = math.pow(2, 8)
     MAX_JOY_VAL = math.pow(2, 15)
 
-    def __init__(self):
-
+    def __init__(self, gamepad):
+        self.gamepad = gamepad
         self.LeftJoystickY = 0
         self.LeftJoystickX = 0
         self.RightJoystickY = 0
@@ -48,7 +50,7 @@ class XboxController(object):
 
     def _monitor_controller(self):
         while True:
-            events = get_gamepad()
+            events = self.gamepad.read()
             for event in events:
                 if event.code == 'ABS_Y':
                     self.LeftJoystickY = event.state / XboxController.MAX_JOY_VAL # normalize between -1 and 1
@@ -93,10 +95,12 @@ class XboxController(object):
 
 def on_connect(mqttc, obj, flags, reason_code, properties):
     print("reason_code: " + str(reason_code))
+    mqttc.subscribe("thrusters/#")  # Subscribe to the topic "digitest/test1"
 
 
 def on_message(mqttc, obj, msg):
-    print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+    #print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+    thruster1[int(msg.topic[-1])] = float(msg.payload.decode('utf-8').replace('b', "").replace('\"', ""))
 
 
 def on_subscribe(mqttc, obj, mid, reason_code_list, properties):
@@ -117,18 +121,19 @@ mqttc.on_connect = on_connect
 mqttc.on_subscribe = on_subscribe
 # Uncomment to enable debug messages
 # mqttc.on_log = on_log
-mqttc.connect("192.168.8.120", 1883, 60)
+#mqttc.connect("192.168.8.117", 1883, 60)
 
-publish.single("paho/test/single", "boo", hostname="192.168.8.120")
+#publish.single("paho/test/single", "boo", hostname="192.168.8.120")
 
 thread = threading.Thread(target=mqttc.loop_forever, args=())
 thread.start()
 
-joy = XboxController()
+joyROV = XboxController(devices.gamepads[0])
+joyClaw = XboxController(devices.gamepads[1])
 
 def controls():
     while True:
-         publish.single("controller/LeftJoystickX", str(joy.LeftJoystickX) + " " + str(joy.LeftJoystickY) + " " + str(joy.RightJoystickX) + " " + str(joy.RightJoystickY), hostname="192.168.8.120")
+        publish.single("controller/LeftJoystickX", str(joyROV.LeftJoystickX) + " " + str(joyROV.LeftJoystickY) + " " + str(joyROV.RightJoystickX) + " " + str(joyROV.RightJoystickY), hostname="192.168.8.117")
 
 
 control = threading.Thread(target=controls, args=())
